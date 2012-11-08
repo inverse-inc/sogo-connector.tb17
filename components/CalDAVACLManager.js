@@ -58,12 +58,16 @@ function CalDAVACLOfflineManager() {
     this.wrappedJSObject = this;
 }
 
-function createStatement(dbconn, sql) {
-    let stmt = dbconn.createStatement(sql);
-    let wrapper = Components.classes["@mozilla.org/storage/statement-wrapper;1"]
-                            .createInstance(Components.interfaces.mozIStorageStatementWrapper);
-    wrapper.initialize(stmt);
-    return wrapper;
+function ExecuteSimpleStatement(db, stmtText) {
+    let stmt = db.createStatement(stmtText);
+    try {
+        stmt.executeStep();
+    }
+    catch (exc) {
+    }
+    finally {
+        stmt.reset();
+    };
 }
 
 CalDAVACLOfflineManager.prototype = {
@@ -84,15 +88,15 @@ CalDAVACLOfflineManager.prototype = {
     initDB: function CalDAVACLOfflineManage_initDB() {
         let dbFile = cal.getCalendarDirectory();
         dbFile.append("caldav-acl.sqlite");
-        let dbService = Components.classes["@mozilla.org/storage/service;1"]
-                                  .getService(Components.interfaces.mozIStorageService);
-        this.mDB = dbService.openDatabase(dbFile);
+        this.mDB = Services.storage.openDatabase(dbFile);
+        dump("this.mDB = " + this.mDB + "\n");
+        dump("this.mDB.createStatement = " + this.mDB.createStatement + "\n");
         let dbVersion = -1;
         if (this.mDB.tableExists("acl_meta")) {
-            let stmt = createStatement(this.mDB, "SELECT value FROM acl_meta WHERE key = 'version'");
+            let stmt = this.mDB.createStatement("SELECT value FROM acl_meta WHERE key = 'version'");
             let txtVersion = null;
             try {
-                stmt.step();
+                stmt.executeStep();
                 txtVersion = stmt.row.value;
             }
             catch (exc) {
@@ -110,9 +114,12 @@ CalDAVACLOfflineManager.prototype = {
 
         let updated = false;
         if (dbVersion < 0) {
-            createStatement(this.mDB, "CREATE TABLE acl_meta (key TEXT PRIMARY KEY ASC NOT NULL, value TEXT NOT NULL)")();
-            createStatement(this.mDB, "CREATE TABLE acl_calendar_entries (url TEXT PRIMARY KEY ASC NOT NULL, has_access_control INTEGER, user_privileges TEXT, user_addresses TEXT, user_principals TEXT, user_identities TEXT, owner_addresses TEXT, owner_principal TEXT, owner_identities TEXT)")();
-            createStatement(this.mDB, "CREATE TABLE acl_item_entries (url TEXT PRIMARY KEY ASC NOT NULL, user_privileges TEXT)")();
+            ExecuteSimpleStatement(this.mDB,
+                                   "CREATE TABLE acl_meta (key TEXT PRIMARY KEY ASC NOT NULL, value TEXT NOT NULL)");
+            ExecuteSimpleStatement(this.mDB,
+                                   "CREATE TABLE acl_calendar_entries (url TEXT PRIMARY KEY ASC NOT NULL, has_access_control INTEGER, user_privileges TEXT, user_addresses TEXT, user_principals TEXT, user_identities TEXT, owner_addresses TEXT, owner_principal TEXT, owner_identities TEXT)");
+            ExecuteSimpleStatement(this.mDB,
+                                   "CREATE TABLE acl_item_entries (url TEXT PRIMARY KEY ASC NOT NULL, user_privileges TEXT)");
             dbVersion = 0;
             updated = true;
         }
@@ -125,74 +132,62 @@ CalDAVACLOfflineManager.prototype = {
 
     prepareStatements: function CalDAVACLOfflineManager_prepareStatements() {
         /* meta data */
-        this.mGetACLMeta = createStatement(this.mDB,
-                                           "SELECT value FROM acl_meta"
-                                           + " WHERE key = :key");
-        this.mInsertACLMeta = createStatement(this.mDB,
-                                              "INSERT INTO acl_meta"
-                                              + " (key, value)"
-                                              + " VALUES(:key, :value)");
-        this.mUpdateACLMeta = createStatement(this.mDB,
-                                              "UPDATE acl_meta"
-                                              + " SET value = :value"
-                                              + " WHERE key = :key");
-        this.mDeleteACLMeta = createStatement(this.mDB,
-                                              "DELETE FROM acl_meta"
-                                              + " WHERE key = :key");
+        this.mGetACLMeta = this.mDB.createStatement("SELECT value FROM acl_meta"
+                                                    + " WHERE key = :key");
+        this.mInsertACLMeta = this.mDB.createStatement("INSERT INTO acl_meta"
+                                                       + " (key, value)"
+                                                       + " VALUES(:key, :value)");
+        this.mUpdateACLMeta = this.mDB.createStatement("UPDATE acl_meta"
+                                                       + " SET value = :value"
+                                                       + " WHERE key = :key");
+        this.mDeleteACLMeta = this.mDB.createStatement("DELETE FROM acl_meta"
+                                                       + " WHERE key = :key");
 
         /* calendar entries */
-        this.mSelectCalendarEntry = createStatement(this.mDB,
-                                                    "SELECT has_access_control, user_privileges,"
-                                                    +"  user_addresses, user_principals, user_identities,"
-                                                    +"  owner_addresses, owner_principal, owner_identities"
-                                                    + " FROM acl_calendar_entries"
-                                                    + " WHERE url = :url");
-        this.mInsertCalendarEntry = createStatement(this.mDB,
-                                                    "INSERT INTO acl_calendar_entries"
-                                                    + " (url, has_access_control, user_privileges,"
-                                                    + "  user_addresses, user_principals, user_identities,"
-                                                    + "  owner_addresses, owner_principal, owner_identities)"
-                                                    + " VALUES(:url, :has_access_control, :user_privileges,"
-                                                    + " :user_addresses, :user_principals, :user_identities,"
-                                                    + " :owner_addresses, :owner_principal, :owner_identities)");
-        this.mUpdateCalendarEntry = createStatement(this.mDB,
-                                                    "UPDATE acl_calendar_entries"
-                                                    + " SET has_access_control = :has_access_control,"
-                                                    + "        user_privileges = :user_privileges,"
-                                                    + "         user_addresses = :user_addresses,"
-                                                    + "        user_principals = :user_principals,"
-                                                    + "        user_identities = :user_identities,"
-                                                    + "        owner_addresses = :owner_addresses,"
-                                                    + "        owner_principal = :owner_principal,"
-                                                    + "       owner_identities = :owner_identities"
-                                                    + " WHERE url = :url");
-        this.mDeleteCalendarEntry = createStatement(this.mDB, "DELETE FROM acl_calendar_entries WHERE url = :url");
+        this.mSelectCalendarEntry = this.mDB.createStatement("SELECT has_access_control, user_privileges,"
+                                                             +"  user_addresses, user_principals, user_identities,"
+                                                             +"  owner_addresses, owner_principal, owner_identities"
+                                                             + " FROM acl_calendar_entries"
+                                                             + " WHERE url = :url");
+        this.mInsertCalendarEntry = this.mDB.createStatement("INSERT INTO acl_calendar_entries"
+                                                             + " (url, has_access_control, user_privileges,"
+                                                             + "  user_addresses, user_principals, user_identities,"
+                                                             + "  owner_addresses, owner_principal, owner_identities)"
+                                                             + " VALUES(:url, :has_access_control, :user_privileges,"
+                                                             + " :user_addresses, :user_principals, :user_identities,"
+                                                             + " :owner_addresses, :owner_principal, :owner_identities)");
+        this.mUpdateCalendarEntry = this.mDB.createStatement("UPDATE acl_calendar_entries"
+                                                             + " SET has_access_control = :has_access_control,"
+                                                             + "        user_privileges = :user_privileges,"
+                                                             + "         user_addresses = :user_addresses,"
+                                                             + "        user_principals = :user_principals,"
+                                                             + "        user_identities = :user_identities,"
+                                                             + "        owner_addresses = :owner_addresses,"
+                                                             + "        owner_principal = :owner_principal,"
+                                                             + "       owner_identities = :owner_identities"
+                                                             + " WHERE url = :url");
+        this.mDeleteCalendarEntry = this.mDB.createStatement("DELETE FROM acl_calendar_entries WHERE url = :url");
 
         /* item entries */
-        this.mSelectItemEntry = createStatement(this.mDB,
-                                                "SELECT user_privileges FROM acl_item_entries"
-                                                + " WHERE url = :url");
-        this.mInsertItemEntry = createStatement(this.mDB,
-                                                "INSERT INTO acl_item_entries"
-                                                + " (url, user_privileges)"
-                                                + " VALUES(:url, :user_privileges)");
-        this.mUpdateItemEntry = createStatement(this.mDB,
-                                                "UPDATE acl_item_entries"
-                                                + " SET user_privileges = :user_privileges"
-                                                + " WHERE url = :url");
-        this.mDeleteItemEntry = createStatement(this.mDB,
-                                                "DELETE FROM acl_item_entries"
-                                                + " WHERE url = :url");
-        this.mDeleteItemEntriesLike = createStatement(this.mDB,
-                                                      "DELETE FROM acl_item_entries"
-                                                      + " WHERE url LIKE :url");
+        this.mSelectItemEntry = this.mDB.createStatement("SELECT user_privileges FROM acl_item_entries"
+                                                         + " WHERE url = :url");
+        this.mInsertItemEntry = this.mDB.createStatement("INSERT INTO acl_item_entries"
+                                                         + " (url, user_privileges)"
+                                                         + " VALUES(:url, :user_privileges)");
+        this.mUpdateItemEntry = this.mDB.createStatement("UPDATE acl_item_entries"
+                                                         + " SET user_privileges = :user_privileges"
+                                                         + " WHERE url = :url");
+        this.mDeleteItemEntry = this.mDB.createStatement("DELETE FROM acl_item_entries"
+                                                         + " WHERE url = :url");
+        this.mDeleteItemEntriesLike = this.mDB.createStatement("DELETE FROM acl_item_entries"
+                                                               + " WHERE url LIKE :url");
     },
 
     getACLMeta: function CalDAVACLOfflineManager_getACLMeta(key) {
         let value = null;
         this.mGetACLMeta.params.key = key;
         try {
-            this.mGetACLMeta.step();
+            this.mGetACLMeta.executeStep();
             value = this.mGetACLMeta.row.value;
         }
         catch(e) {
@@ -209,12 +204,23 @@ CalDAVACLOfflineManager.prototype = {
         }
         else {
             let initialValue = this.getACLMeta(key);
+            let stmt = null;
             if (initialValue === null) {
-                this.mInsertACLMeta(key, value);
+                stmt = this.mInsertACLMeta;
             }
             else {
-                this.mUpdateACLMeta(value, key);
+                stmt = this.mUpdateACLMeta;
             }
+            stmt.params["key"] = key;
+            stmt.params["value"] = value;
+            try {
+                stmt.executeStep();
+            }
+            catch(e) {
+            }
+            finally {
+                stmt.reset();
+            };
         }
     },
     deleteACLMeta: function CalDAVACLOfflineManager_deleteACLMeta(key) {
@@ -250,7 +256,7 @@ CalDAVACLOfflineManager.prototype = {
         this.mSelectCalendarEntry.params.url = url;
         let entry = null;
         try {
-            if (this.mSelectCalendarEntry.step()) {
+            if (this.mSelectCalendarEntry.executeStep()) {
                 let row = this.mSelectCalendarEntry.row;
                 entry = new CalDAVAclCalendarEntry(calendar, this);
                 entry.hasAccessControl = (row.has_access_control == 1);
@@ -362,7 +368,7 @@ CalDAVACLOfflineManager.prototype = {
         else {
             this.mSelectItemEntry.params.url = url;
             try {
-                if (this.mSelectItemEntry.step()) {
+                if (this.mSelectItemEntry.executeStep()) {
                     let row = this.mSelectItemEntry.row;
                     entry = new CalDAVAclItemEntry(calEntry);
                     entry.userPrivileges = this._parseStringArray(row.user_privileges);
@@ -415,8 +421,25 @@ CalDAVACLOfflineManager.prototype = {
 
     dropCalendarEntry: function CalDAVACLOfflineManager_dropCalendarEntry(url) {
         // dump("dropCalendarEntry: " + url + "\n");
-        this.mDeleteItemEntriesLike(url + "%");
-        this.mDeleteCalendarEntry(url);
+        this.mDeleteItemEntriesLike.params["url"] = url + "%";
+        try {
+            this.mDeleteItemEntriesLike.executeStep();
+        }
+        catch (exc) {
+        }
+        finally {
+            this.mDeleteItemEntriesLike.reset();
+        }
+
+        this.mDeleteCalendarEntry.params["url"] = url;
+        try {
+            this.mDeleteCalendarEntry.executeStep();
+        }
+        catch (exc) {
+        }
+        finally {
+            this.mDeleteCalendarEntry.reset();
+        }
     }
 };
 

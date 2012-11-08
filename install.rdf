@@ -5,7 +5,7 @@
   <Description about="urn:mozilla:install-manifest"
     em:name="Inverse SOGo Connector"
     em:id="sogo-connector@inverse.ca"
-    em:version="10.0.3"
+    em:version="17.0.0"
     em:description="A DAV plugin for keeping addressbooks and events in sync"
     em:iconURL="chrome://sogo-connector/skin/addressbook/sogo.png"
     em:creator="Inverse &lt;support@inverse.ca>"
@@ -26,8 +26,8 @@
     <em:targetApplication>
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-        <em:minVersion>10.0</em:minVersion>
-        <em:maxVersion>10.*</em:maxVersion>
+        <em:minVersion>17.0</em:minVersion>
+        <em:maxVersion>17.*</em:maxVersion>
       </Description>
     </em:targetApplication>
   </Description>

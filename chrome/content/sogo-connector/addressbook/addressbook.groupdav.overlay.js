@@ -361,7 +361,7 @@ let deleteManager = {
                 /* we commit the preferences here because sometimes Thunderbird will
                  crash when deleting the real instance of the list. */
                 let prefService = (Components.classes["@mozilla.org/preferences-service;1"]
-                                             .getService(Components.interfaces.nsIPrefBranch));
+                                             .getService(Components.interfaces.nsIPrefService));
                 prefService.savePrefFile(null);
 
                 let listDirectory = SCGetDirectoryFromURI(mailListURI);

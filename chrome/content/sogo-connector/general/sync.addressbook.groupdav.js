@@ -468,7 +468,7 @@ GroupDavSynchronizer.prototype = {
     },
     commitPreferences: function() {
         let prefService = (Components.classes["@mozilla.org/preferences-service;1"]
-                                     .getService(Components.interfaces.nsIPrefBranch));
+                                     .getService(Components.interfaces.nsIPrefService));
         prefService.savePrefFile(null);
     },
     importCard: function(key, data) {

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#"
+     xmlns:NC="http://home.netscape.com/NC-rdf#"
+     xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <Description about="urn:mozilla:install-manifest"
+    em:name="Inverse SOGo Connector"
+    em:id="sogo-connector@inverse.ca"
+    em:version="10.0.3"
+    em:description="A DAV plugin for keeping addressbooks and events in sync"
+    em:iconURL="chrome://sogo-connector/skin/addressbook/sogo.png"
+    em:creator="Inverse &lt;support@inverse.ca>"
+    em:homepageURL="http://sogo.nu/downloads/frontends.html">
+    <em:developer>Inverse &lt;support@inverse.ca></em:developer>	  
+    <em:contributor>Chris Bryant</em:contributor>
+    <em:contributor>Damon Hart</em:contributor>
+    <em:contributor>Dominik Gehl</em:contributor>
+    <em:contributor>Helge Hess</em:contributor>	  
+    <em:contributor>Ludovic Marcotte</em:contributor>
+    <em:contributor>Mark Banner for the inputs on the address book architecture http://www.standard8.plus.com/</em:contributor>
+    <em:contributor>Neil Deakin</em:contributor>
+    <em:contributor>Paolo Kaosmos</em:contributor>	  
+    <em:contributor>Raffael Luthiger for the German translation</em:contributor>	  
+    <em:contributor>Ralf Becker for eGroupware integration</em:contributor>
+    <em:contributor>Regis Balzard (for the chocolate)</em:contributor>
+    <em:contributor>Wilfried Goesgens</em:contributor>
+    <em:targetApplication>
+      <Description>
+        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+        <em:minVersion>10.0</em:minVersion>
+        <em:maxVersion>10.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+  </Description>
+</RDF>

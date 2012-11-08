@@ -1,0 +1,32 @@
+=====================================================	
+	To package the extension 
+=====================================================
+edit <em:version> in install.rdf
+modify VERSION in Makefile 
+run make
+
+========================================================
+	Logging
+========================================================
+var logLevelVal = {
+    debug : 3,  //Default for now
+    info  : 2,
+    warn  : 1,
+    error : 0
+}
+
+in UserProfileDirectory/prefs.js
+user_pref("extensions.ca.inverse.logLevel", 3);
+
+log file is UserProfileDirectory/extensions.ca.inverse.addressbook.groupdav.log
+
+
+========================================================
+	Lightning Modifications
+========================================================
+
+Modifications to Lightning (such as methods overwrite) are done within
+
+// INVERSE - BEGIN
+
+// INVERSE - END

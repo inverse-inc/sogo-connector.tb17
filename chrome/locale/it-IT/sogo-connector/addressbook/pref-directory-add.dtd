@@ -1,0 +1,59 @@
+<!--
+ Copyright:		Infoporto La Spezia Srl, 2008
+ Author: 		Marco Lertora
+ Email:			marco.lertora@infoporto.it
+ URL:			http://www.infoporto.it
+  
+ This file is part of "SOGo Connector" a Thunderbird extension.
+
+    "SOGo Connector" is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License version 2 as published by
+    the Free Software Foundation;
+
+    "SOGo Connector" is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with "SOGo Connector"; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA	
+-->
+
+<!ENTITY newDirectoryTitle.label          "Proprietà della rubrica remota">
+<!ENTITY groupdavName.label               "Nome: ">
+<!ENTITY groupdavName.accesskey           "n">
+<!ENTITY groupdavURL.label                "URL: ">
+<!ENTITY groupdavURL.accesskey            "l">
+<!ENTITY groupdavHostname.label           "Host: ">
+<!ENTITY groupdavHostname.accesskey       "h">
+<!ENTITY groupdavSecure.label             "Usa connessione sicura (SSL)">
+<!ENTITY groupdavSecure.accesskey         "S">
+
+<!ENTITY groupdavUser.label               "Utente:">
+<!ENTITY groupdavUser.accesskey           "r">
+
+<!ENTITY groupdavPassword.label           "Password:">
+<!ENTITY groupdavPassword.accesskey       "p">
+
+<!ENTITY groupDavServerType.label         "Tipo del server remoto:">
+<!ENTITY groupDavServerType.accesskey     "G">
+
+
+<!ENTITY General.tab                       "Generale">
+<!ENTITY Offline.tab                       "Offline">
+<!ENTITY offlineText.label                 "Puoi scaricare una copia locale di questa rubrica in modo da renderla disponibile anche quando lavori offline.">
+
+<!ENTITY downloadNowButton.label           "Scarica ora">
+<!ENTITY downloadNowButton.accesskey       "D">
+<!-- Localization note: this is here because the width of the dialog 
+     is determined by the width of the base DN box; and that is likely
+     to vary somewhat with the language.
+-->
+<!ENTITY newDirectoryWidth                 "36em">
+
+<!ENTITY ReadOnly.label               		"Sola lettura">
+<!ENTITY ReadOnly.accesskey           		"R">
+
+
+

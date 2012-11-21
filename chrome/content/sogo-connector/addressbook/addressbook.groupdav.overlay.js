@@ -544,11 +544,14 @@ function _SCDeleteListAsDirectory(directory, selectedDir) {
 function SCAbConfirmDeleteDirectory(selectedDir) {
     let confirmDeleteMessage;
 
+    let prefBranch = (Components.classes["@mozilla.org/preferences-service;1"]
+                                .getService(Components.interfaces.nsIPrefBranch));
+
     // Check if this address book is being used for collection
-    if (gPrefs.getCharPref("mail.collect_addressbook") == selectedDir
-        && (gPrefs.getBoolPref("mail.collect_email_address_outgoing")
-            || gPrefs.getBoolPref("mail.collect_email_address_incoming")
-            || gPrefs.getBoolPref("mail.collect_email_address_newsgroup"))) {
+    if (prefBranch.getCharPref("mail.collect_addressbook") == selectedDir
+        && (prefBranch.getBoolPref("mail.collect_email_address_outgoing")
+            || prefBranch.getBoolPref("mail.collect_email_address_incoming")
+            || prefBranch.getBoolPref("mail.collect_email_address_newsgroup"))) {
         let brandShortName = document.getElementById("bundle_brand").getString("brandShortName");
         confirmDeleteMessage = gAddressBookBundle.getFormattedString("confirmDeleteCollectionAddressbook",
                                                                      [brandShortName]);
@@ -802,7 +805,9 @@ function SCSetSearchCriteria(menuitem) {
         gQueryURIFormat = "?(or(" + criteria + ",c,@V))"; // the "or" is important here
     }
     else {
-        let nameOrEMailSearch = gPrefs.getComplexValue("mail.addr_book.quicksearchquery.format",
+        let prefBranch = (Components.classes["@mozilla.org/preferences-service;1"]
+                                    .getService(Components.interfaces.nsIPrefBranch));
+        let nameOrEMailSearch = prefBranch.getComplexValue("mail.addr_book.quicksearchquery.format",
                                                        Components.interfaces.nsIPrefLocalizedString).data;
         gQueryURIFormat = nameOrEMailSearch;
     }

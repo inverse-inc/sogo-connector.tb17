@@ -46,6 +46,7 @@
 
   <commandset id="addressBook">
     <command id="cmd_syncGroupdav" oncommand="SCCommandSynchronize();"/>
+    <command id="cmd_syncAbortGroupdav" oncommand="SCCommandSynchronizeAbort();"/>
   </commandset>
 
   <!--Add the GroupDAV synchronize button to the toolbar -->
@@ -79,6 +80,7 @@
   <popup id="dirTreeContext">
     <menuseparator/>	
     <menuitem id="dirTreeContext-syncGroupdav" label="&GroupDavSync.label;" accesskey="&GroupDavSync.accesskey;" command="cmd_syncGroupdav"/>
+    <menuitem id="dirTreeContext-syncGroupdavAbort" label="&GroupDavSyncAbort.label;" accesskey="&GroupDavSyncAbort.accesskey;" command="cmd_syncAbortGroupdav"/>
   </popup>
   
   <!-- Add the New GroupDAV addressbook menu to the File menu	 -->

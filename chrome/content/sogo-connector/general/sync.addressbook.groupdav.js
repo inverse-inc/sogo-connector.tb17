@@ -119,6 +119,21 @@ GroupDavSynchronizer.prototype = {
 
         return newContext;
     },
+    abortOngoingSync: function() {
+        if (!this.context.apiDisabled) {
+            this.initSyncVariables();
+            if (this.context.requests[this.gURL])
+            {
+              dump("*** a request is already active for url: " + this.gURL + " Abort...\n");
+              this.abort();
+              alert("Calendar was synchronization was aborted.");
+              
+            }
+            else
+              alert("Calendar is not being synchronized. Nothing to abort.");
+              dump("*** a request not active for url: " + this.gURL + " Nothing to abort.\n");
+        }
+    },
     start: function() {
         if (!this.context.apiDisabled) {
             this.initSyncVariables();
@@ -520,7 +535,6 @@ GroupDavSynchronizer.prototype = {
             }
             oldCard.setProperty("PhotoType", "generic");
 
-            /* FIXME: there is a thunderbird bug here which prevent the properties from actually be deleted... */
             let allOldCardProperties = oldCard.properties;
             while (allOldCardProperties.hasMoreElements()) {
                 let prop = allOldCardProperties.getNext().QueryInterface(Components.interfaces.nsIProperty);
@@ -1459,4 +1473,9 @@ function SynchronizeGroupdavAddressbook(uri, callback, callbackData) {
     synchronizer.callback = callback;
     synchronizer.callbackData = callbackData;
     synchronizer.start();
+}
+
+function SynchronizeGroupdavAddressbookAbort(uri) {
+    let synchronizer = new GroupDavSynchronizer(uri);
+    synchronizer.abortOngoingSync();
 }

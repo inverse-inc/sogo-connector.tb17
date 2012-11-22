@@ -84,6 +84,7 @@ function SCGoUpdateGlobalEditMenuItems() {
         gSelectedDir = GetSelectedDirectory();
         //  		dump("SCGoUpdateGlobalEditMenuItems\n  gSelectedDir" + gSelectedDir + "\n");
         goUpdateCommand("cmd_syncGroupdav");
+        goUpdateCommand("cmd_syncAbortGroupdav");
         this.SCGoUpdateGlobalEditMenuItemsOld();
     }
     catch (e) {
@@ -96,6 +97,7 @@ function SCCommandUpdate_AddressBook() {
         gSelectedDir = GetSelectedDirectory();
         //  		dump("SCCommandUpdate_AddressBook  gSelectedDir" + gSelectedDir + "\n");
         goUpdateCommand('cmd_syncGroupdav');
+        goUpdateCommand("cmd_syncAbortGroupdav");
         this.SCCommandUpdate_AddressBookOld();
     }
     catch (e) {
@@ -108,6 +110,7 @@ function SCGoUpdateSelectEditMenuItems() {
         gSelectedDir = GetSelectedDirectory();
         //  		dump("SCGoUpdateSelectEditMenuItems  gSelectedDir" + gSelectedDir + "\n");
         goUpdateCommand('cmd_syncGroupdav');
+        goUpdateCommand("cmd_syncAbortGroupdav");
         this.SCGoUpdateSelectEditMenuItemsOld();
     }
     catch (e) {
@@ -121,7 +124,7 @@ function dirPaneControllerOverlay() {
 
 dirPaneControllerOverlay.prototype = {
     supportsCommand: function(command) {
-        return (command == "cmd_syncGroupdav");
+        return (command == "cmd_syncGroupdav" || command == "cmd_syncAbortGroupdav");
     },
 
     isCommandEnabled: function(command) {
@@ -133,6 +136,9 @@ dirPaneControllerOverlay.prototype = {
             try {
                 switch (command) {
                 case "cmd_syncGroupdav":
+                    result = isGroupdavDirectory(gSelectedDir);
+                    break;
+                case "cmd_syncAbortGroupdav":
                     result = isGroupdavDirectory(gSelectedDir);
                     break;
                     // case "cmd_newlist":
@@ -821,6 +827,10 @@ function SCOnUnload() {
                             groupdavSynchronizationObserver);
     nmgr.unregisterObserver("groupdav.synchronization.addressbook.updated",
                             groupdavSynchronizationObserver);
+}
+
+function SCCommandSynchronizeAbort() {
+    SynchronizeGroupdavAddressbookAbort(gSelectedDir);
 }
 
 function SCCommandSynchronize() {

@@ -126,11 +126,11 @@ GroupDavSynchronizer.prototype = {
             {
               dump("*** a request is already active for url: " + this.gURL + " Abort...\n");
               this.abort();
-              alert("Calendar was synchronization was aborted.");
+              alert("Synchronization of address book was aborted.");
               
             }
             else
-              alert("Calendar is not being synchronized. Nothing to abort.");
+              alert("Address book is not being synchronized. Nothing to abort.");
               dump("*** a request not active for url: " + this.gURL + " Nothing to abort.\n");
         }
     },

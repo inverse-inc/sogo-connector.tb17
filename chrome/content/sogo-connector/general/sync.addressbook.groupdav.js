@@ -498,6 +498,8 @@ GroupDavSynchronizer.prototype = {
             /* we must delete the previous photo file to avoid duplicating it
              with another name */
             let oldCard = this.localCardPointerHash[key];
+            // dump("  TEST oldCard: "+oldCard+"\n");
+            // dump("  TEST card: "+card+"\n");
             /* we reset photo properties */
             let photoName = oldCard.getProperty("PhotoName", "");
             if (photoName != "") {
@@ -523,10 +525,69 @@ GroupDavSynchronizer.prototype = {
             while (allOldCardProperties.hasMoreElements()) {
                 let prop = allOldCardProperties.getNext().QueryInterface(Components.interfaces.nsIProperty);
                 let propName = String(prop.name);
+                /*ignore properties starting with "unprocessed:"*/
                 if (propName.indexOf("unprocessed:") == 0) {
                     oldCard.deleteProperty(propName);
                 }
+                /*for properties not starting with "unprocessed:" ... */
+                else
+                {
+                    deleteableProp = ['HomeAddress'        ,
+                                      'WorkCity'           ,
+                                      'FaxNumber'          ,
+                                      'Company'            ,
+                                      'HomeAddress2'       ,
+                                      'HomeCity'           ,
+                                      'WorkCountry'        ,
+                                      'WorkZipCode'        ,
+                                      'HomeCountry'        ,
+                                      'BirthYear'          ,
+                                      'CellularNumber'     ,
+                                      'FirstName'          ,
+                                      'Notes'              ,
+                                      'WorkState'          ,
+                                      'LastName'           ,
+                                      'HomeState'          ,
+                                      'PrimaryEmail'       ,
+                                      'BirthDay'           ,
+                                      'WebPage2'           ,
+                                      'WorkAddress2'       ,
+                                      'BirthMonth'         ,
+                                      'Categories'         ,
+                                      'NickName'           ,
+                                      'WorkAddress'        ,
+                                      'HomeZipCode'
+                                      ];
+                    if (deleteableProp.indexOf(propName) == -1) {
+                        dump(" THIS PROPERTY IS NOT DELETEABLE. ignore.\n");
+                    }
+                    else
+                    {
+                        /* If property is deleteable, 
+                           search for all properties in new card if current propName is still available.
+                           If not, remove propName from oldCard. */
+                        let allNewCardProperties = card.properties;
+                        propertyStillAvailable = false;
+                        while (allNewCardProperties.hasMoreElements()) {
+                            let propNew = allNewCardProperties.getNext().QueryInterface(Components.interfaces.nsIProperty);
+                            let propNameNew = String(propNew.name);
+                            if(propName == propNameNew)
+                            {
+                              propertyStillAvailable = true;
+                              dump("STILL AVAILABLE IN NEW CARD ("+propNameNew+")\n");
+                              break;
+                            }
+                        }
+                        if(propertyStillAvailable == false)
+                        {
+                            dump("NOT AVAILABLE IN NEW CARD. delete this property...\n");
+                            oldCard.deleteProperty(propName);
+                        }
+                    }
+                }
+
             }
+            /* FIXME or REMOVEME: Is modifyCard really required twice here? */
             this.gAddressBook.modifyCard(oldCard);
 
             oldCard.copy(card);
@@ -1391,9 +1452,10 @@ new:
 };
 
 function SynchronizeGroupdavAddressbook(uri, callback, callbackData) {
-    // 	dump("sync uri: " + uri + "\n");
+    // dump("sync uri: " + uri + "\n");
     let synchronizer = new GroupDavSynchronizer(uri);
-    // 	dump("callback:" + callback + "\n");
+    // dump("callback:" + callback + "\n");
+    // dump("callbackData:" + callbackData + "\n");
     synchronizer.callback = callback;
     synchronizer.callbackData = callbackData;
     synchronizer.start();

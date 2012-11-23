@@ -486,7 +486,7 @@ sogoWebDAV.prototype = {
             let headers = {};
             let response = null;
             if (status == 499) {
-                dump("xmlRequest: received status 499 for url: " + this.url + "; method: " + method + "\n");
+                dump("xmlRequest: received status 499 for url: " + this.url + "\n");
             }
             else {
                 let visitor = {};

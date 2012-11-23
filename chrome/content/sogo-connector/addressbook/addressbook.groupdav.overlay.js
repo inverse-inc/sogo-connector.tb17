@@ -418,7 +418,7 @@ function DeleteGroupDAVCards(directory, cards, deleteLocally) {
 function _deleteGroupDAVComponentWithKey(prefService, key,
                                          directory, component,
                                          deleteLocally) {
-    dump("\n\nwe delete: " + key + "\n\n\n");
+    dump("\n\nwe delete: " + key + " with deleteLocally="+deleteLocally+"\n\n\n");
     if (key && key.length) {
         let href = prefService.getURL() + key;
         let deleteOp = new sogoWebDAV(href, deleteManager,
@@ -427,6 +427,10 @@ function _deleteGroupDAVComponentWithKey(prefService, key,
                                        deleteLocally: deleteLocally});
         deleteOp.delete();
         dump("webdav_delete on '" + href + "'\n");
+        // force full sync on next sync by invalidating cTag.
+        // This way, if server does not delete contact correctly (e.g. write permission denied)
+        // the contact will reappear on next synchronization.
+        prefService.setCTag("invalid");
     }
     else /* 604 = "not found locally" */
         deleteManager.onDAVQueryComplete(604, null, null,
@@ -549,12 +553,16 @@ function _SCDeleteListAsDirectory(directory, selectedDir) {
 
 function SCAbConfirmDeleteDirectory(selectedDir) {
     let confirmDeleteMessage;
+    
+    let prefBranch = (Components.classes["@mozilla.org/preferences-service;1"]
+          .getService(Components.interfaces.nsIPrefBranch));
+
 
     // Check if this address book is being used for collection
-    if (gPrefs.getCharPref("mail.collect_addressbook") == selectedDir
-        && (gPrefs.getBoolPref("mail.collect_email_address_outgoing")
-            || gPrefs.getBoolPref("mail.collect_email_address_incoming")
-            || gPrefs.getBoolPref("mail.collect_email_address_newsgroup"))) {
+    if (prefBranch.getCharPref("mail.collect_addressbook") == selectedDir
+          && (prefBranch.getBoolPref("mail.collect_email_address_outgoing")
+          || prefBranch.getBoolPref("mail.collect_email_address_incoming")
+          || prefBranch.getBoolPref("mail.collect_email_address_newsgroup"))) {
         let brandShortName = document.getElementById("bundle_brand").getString("brandShortName");
         confirmDeleteMessage = gAddressBookBundle.getFormattedString("confirmDeleteCollectionAddressbook",
                                                                      [brandShortName]);
@@ -808,7 +816,9 @@ function SCSetSearchCriteria(menuitem) {
         gQueryURIFormat = "?(or(" + criteria + ",c,@V))"; // the "or" is important here
     }
     else {
-        let nameOrEMailSearch = gPrefs.getComplexValue("mail.addr_book.quicksearchquery.format",
+        let prefBranch = (Components.classes["@mozilla.org/preferences-service;1"]
+                .getService(Components.interfaces.nsIPrefBranch));
+        let nameOrEMailSearch = prefBranch.getComplexValue("mail.addr_book.quicksearchquery.format",
                                                        Components.interfaces.nsIPrefLocalizedString).data;
         gQueryURIFormat = nameOrEMailSearch;
     }

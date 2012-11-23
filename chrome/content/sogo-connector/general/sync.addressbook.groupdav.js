@@ -546,6 +546,7 @@ GroupDavSynchronizer.prototype = {
                 /*for properties not starting with "unprocessed:" ... */
                 else
                 {
+                    // List of all card properties which may be deleted e.g., via web interface
                     deleteableProp = ['HomeAddress'        ,
                                       'WorkCity'           ,
                                       'FaxNumber'          ,
@@ -573,7 +574,7 @@ GroupDavSynchronizer.prototype = {
                                       'HomeZipCode'
                                       ];
                     if (deleteableProp.indexOf(propName) == -1) {
-                        dump(" THIS PROPERTY IS NOT DELETEABLE. ignore.\n");
+                        //dump("  Property "+propNameNew+" is not deletable. Ignore.\n");
                     }
                     else
                     {
@@ -588,13 +589,13 @@ GroupDavSynchronizer.prototype = {
                             if(propName == propNameNew)
                             {
                               propertyStillAvailable = true;
-                              dump("STILL AVAILABLE IN NEW CARD ("+propNameNew+")\n");
+                              //dump("  Property "+propNameNew+" still available in new, received card.\n");
                               break;
                             }
                         }
                         if(propertyStillAvailable == false)
                         {
-                            dump("NOT AVAILABLE IN NEW CARD. delete this property...\n");
+                            dump("  Property "+propNameNew+" NOT available in new, received card. Delete this property...\n");
                             oldCard.deleteProperty(propName);
                         }
                     }

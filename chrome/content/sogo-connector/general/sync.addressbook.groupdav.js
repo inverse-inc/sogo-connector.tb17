@@ -774,7 +774,7 @@ GroupDavSynchronizer.prototype = {
         this.pendingOperations = 0;
         // 		dump("pendingOperations: " + this.pendingOperations + "\n");
         //  		dump("status: " + status + "\n");
-        //  		dump("response: " + response + "\n");
+        //  		dump("jsonResponse: " + jsonResponse + "\n");
 
         if (status > 199 && status < 400 && jsonResponse) {
             let responses = jsonResponse["multistatus"][0]["response"];
@@ -827,6 +827,7 @@ GroupDavSynchronizer.prototype = {
             }
         }
         else {
+            setTimeout("throw new Error('Address book synchronzation could not contact server.')",0); 
             this.abort();
         }
     },

@@ -26,6 +26,11 @@
 <!ENTITY GroupDavSync.label                          "Synchroniser">
 <!ENTITY GroupDavSync.accesskey                  		"S">
 <!ENTITY GroupDavSync.tooltip                      	"Synchronise les fiches locales avec celles du serveur">
+
+<!ENTITY GroupDavSyncAbort.label                      		"Abort Synchronization">
+<!ENTITY GroupDavSyncAbort.accesskey                  		"A">
+<!ENTITY GroupDavSyncAbort.tooltip                      	"Abort ongoing Synchronization (try if nothing happens)"> 
+
 <!ENTITY GroupDavConf.label                      		"Configurer">
 <!ENTITY GroupDavConf.accesskey                  		"C">
 

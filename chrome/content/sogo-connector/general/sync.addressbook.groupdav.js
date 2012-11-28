@@ -595,7 +595,7 @@ GroupDavSynchronizer.prototype = {
                         }
                         if(propertyStillAvailable == false)
                         {
-                            dump("  Property "+propNameNew+" NOT available in new, received card. Delete this property...\n");
+                            dump("  Property "+propName+" NOT available in new, received card. Delete this property...\n");
                             oldCard.deleteProperty(propName);
                         }
                     }

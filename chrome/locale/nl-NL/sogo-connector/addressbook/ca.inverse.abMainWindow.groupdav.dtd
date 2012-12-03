@@ -27,6 +27,10 @@
 <!ENTITY GroupDavSync.accesskey                  		"S">
 <!ENTITY GroupDavSync.tooltip                      	"Synchroniseer de adresboekingangen met de server">
 
+<!ENTITY GroupDavSyncAbort.label                      		"Abort Synchronization">
+<!ENTITY GroupDavSyncAbort.accesskey                  		"A">
+<!ENTITY GroupDavSyncAbort.tooltip                      	"Abort ongoing Synchronization (try if nothing happens)"> 
+
 <!ENTITY GroupDavConf.label                      		"Configureren">
 <!ENTITY GroupDavConf.accesskey                  		"C">
 

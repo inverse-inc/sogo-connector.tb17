@@ -27,6 +27,10 @@
 <!ENTITY GroupDavSync.accesskey                  		"S">
 <!ENTITY GroupDavSync.tooltip                      	"Adresskarten mit dem Server synchronisieren">
 
+<!ENTITY GroupDavSyncAbort.label                      		"Abort Synchronization">
+<!ENTITY GroupDavSyncAbort.accesskey                  		"A">
+<!ENTITY GroupDavSyncAbort.tooltip                      	"Abort ongoing Synchronization (try if nothing happens)"> 
+
 <!ENTITY GroupDavConf.label                      		"Konfigurieren">
 <!ENTITY GroupDavConf.accesskey                  		"K">
 

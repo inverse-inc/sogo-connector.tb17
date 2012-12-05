@@ -1,6 +1,8 @@
 NEWS
 ====
 
+For later changes see ChangeLog.
+
 0.92
 	Fixed unescaping of special characters (\r, \n, ...) from VCARD content
 

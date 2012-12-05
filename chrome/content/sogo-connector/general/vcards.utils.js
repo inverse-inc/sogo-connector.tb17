@@ -44,7 +44,9 @@ function escapedForCard(theString) {
     theString = theString.replace(/\\/g, "\\\\");
     theString = theString.replace(/,/g, "\\,");
     theString = theString.replace(/;/g, "\\;");
-    theString = theString.replace(/:/g, "\\:");
+    // according to http://tools.ietf.org/html/rfc2426#page-37
+    // colons need not to be escaped.
+    // --> removed: theString = theString.replace(/:/g, "\\:");
     theString = theString.replace(/\r\n/g, "\\n");
     theString = theString.replace(/\n/g, "\\n");
 
@@ -871,9 +873,18 @@ function photoFileFromName(photoName, inSOGoCache) {
                          .get("ProfD", Components.interfaces.nsILocalFile);
     file.append(inSOGoCache ? kPhotoImageCache : "Photos");
     if (photoName) {
-        file.append(photoName);
+        //dump("photoFileFromName() got photoName = " +photoName+ "\n");
+        try {
+            file.append(photoName);
+        }
+        catch(e) {
+            dump("vcards.utils.js: could not get photo from photoName '" + photoName + "'. This might happen if photoName contains absolute file path.\n");
+            dump("Exception: " + e + "\n");
+            dump("Re-throwing this exception.\n");
+            throw e;
+        }
     }
-
+    //dump("photoFileFromName() is returning "+file.path +"\n");
     return file;
 }
 
@@ -984,6 +995,7 @@ function saveImportedPhoto(content, ext) {
         catch(e) {
             dump("photoName: " + photoName + "\n");
             dump("file: " + file + "\n");
+            dump("Exception: " + e + "\n");
             return null;
         }
 
@@ -1021,7 +1033,7 @@ function deletePhotoFile(photoName, inSOGoCache) {
     catch(e) {
         dump("vcards.utils.js: photo named '" + photoName + "' could not be"
              + " deleted (ignored)\n");
-        dump("Exception: " + e + "\n");
+        //dump("Exception: " + e + "\n");
     }
 }
 

@@ -1,3 +1,13 @@
+2012-12-05  Luke Owncloud
+
+	* Removed escaping of colons of VCARDs (not required according to http://tools.ietf.org/html/rfc2426#page-37)
+	* add GIT version to XPI
+	* fixed incompatability with Windows during handling contact photo files.
+	* added option: "abot sync". Useful if sync does not finish on its on (usually indicates some internals error)
+	* error output to Thunderbird's error console for severe errors.
+	* force full sync on next sync cycle (checkServerUpdates) after a contact was deleted.
+	* allow user to remove properties from contact in contact list
+
 2012-04-20  Wolfgang Sourdeau  <wsourdeau@inverse.ca>
 
 	* components/SOGoConnectorAutocompleteSearch.js: restored and

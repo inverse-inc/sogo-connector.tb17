@@ -119,6 +119,21 @@ GroupDavSynchronizer.prototype = {
 
         return newContext;
     },
+    abortOngoingSync: function() {
+        if (!this.context.apiDisabled) {
+            this.initSyncVariables();
+            if (this.context.requests[this.gURL])
+            {
+              dump("*** a request is already active for url: " + this.gURL + " Abort...\n");
+              this.abort();
+              alert("Synchronization of address book was aborted.");
+              
+            }
+            else
+              alert("Address book is not being synchronized. Nothing to abort.");
+              dump("*** a request not active for url: " + this.gURL + " Nothing to abort.\n");
+        }
+    },
     start: function() {
         if (!this.context.apiDisabled) {
             this.initSyncVariables();
@@ -498,6 +513,8 @@ GroupDavSynchronizer.prototype = {
             /* we must delete the previous photo file to avoid duplicating it
              with another name */
             let oldCard = this.localCardPointerHash[key];
+            // dump("  TEST oldCard: "+oldCard+"\n");
+            // dump("  TEST card: "+card+"\n");
             /* we reset photo properties */
             let photoName = oldCard.getProperty("PhotoName", "");
             if (photoName != "") {
@@ -508,9 +525,14 @@ GroupDavSynchronizer.prototype = {
             if (photoURL != "") {
                 /* warning: this might not work on windows, due to the accessing of files via uris */
                 if (urlIsInSOGoImageCache(photoURL)) {
+                    //for Windows: photoURL == file://absolute/path/to/some.jpg
                     let parts = photoURL.split("/");
                     let lastPart = parts[parts.length-1];
                     if (lastPart != "") {
+                        //on Windows, this is a absolute path. We only need the filename.
+                        parts = lastPart.split("\\");
+                        if(parts.length > 1)
+                            lastPart = parts[parts.length-1];
                         deletePhotoFile(lastPart, true);
                     }
                 }
@@ -518,15 +540,80 @@ GroupDavSynchronizer.prototype = {
             }
             oldCard.setProperty("PhotoType", "generic");
 
-            /* FIXME: there is a thunderbird bug here which prevent the properties from actually be deleted... */
             let allOldCardProperties = oldCard.properties;
             while (allOldCardProperties.hasMoreElements()) {
                 let prop = allOldCardProperties.getNext().QueryInterface(Components.interfaces.nsIProperty);
                 let propName = String(prop.name);
+                /*ignore properties starting with "unprocessed:"*/
                 if (propName.indexOf("unprocessed:") == 0) {
                     oldCard.deleteProperty(propName);
                 }
+                /*for properties not starting with "unprocessed:" ... */
+                else
+                {
+                    // List of all card properties which may be deleted e.g., via web interface
+                    deleteableProp = ['HomeAddress'        ,
+                                      'WorkCity'           ,
+                                      'FaxNumber'          ,
+                                      'Company'            ,
+                                      'HomeAddress2'       ,
+                                      'HomeCity'           ,
+                                      'WorkCountry'        ,
+                                      'WorkZipCode'        ,
+                                      'HomeCountry'        ,
+                                      'BirthYear'          ,
+                                      'CellularNumber'     ,
+                                      'FirstName'          ,
+                                      'Notes'              ,
+                                      'WorkState'          ,
+                                      'LastName'           ,
+                                      'HomeState'          ,
+                                      'PrimaryEmail'       ,
+                                      'BirthDay'           ,
+                                      'WebPage2'           ,
+                                      'WorkAddress2'       ,
+                                      'BirthMonth'         ,
+                                      'Categories'         ,
+                                      'NickName'           ,
+                                      'WorkAddress'        ,
+                                      'HomeZipCode',
+                                      'WebPage1',
+                                      'WorkPhone',
+                                      '_AimScreenName',
+                                      'PagerNumber',
+                                      'SecondEmail',
+                                      'HomePhone'
+                                      ];
+                    if (deleteableProp.indexOf(propName) == -1) {
+                        dump("  Property "+propName+" is not deletable. Ignore.\n");
+                    }
+                    else
+                    {
+                        /* If property is deleteable, 
+                           search for all properties in new card if current propName is still available.
+                           If not, remove propName from oldCard. */
+                        let allNewCardProperties = card.properties;
+                        propertyStillAvailable = false;
+                        while (allNewCardProperties.hasMoreElements()) {
+                            let propNew = allNewCardProperties.getNext().QueryInterface(Components.interfaces.nsIProperty);
+                            let propNameNew = String(propNew.name);
+                            if(propName == propNameNew)
+                            {
+                              propertyStillAvailable = true;
+                              dump("  Property "+propName+" still available in new, received card.\n");
+                              break;
+                            }
+                        }
+                        if(propertyStillAvailable == false)
+                        {
+                            dump("  Property "+propName+" NOT available in new, received card. Delete this property...\n");
+                            oldCard.deleteProperty(propName);
+                        }
+                    }
+                }
+
             }
+            /* FIXME or REMOVEME: Is modifyCard really required twice here? */
             this.gAddressBook.modifyCard(oldCard);
 
             oldCard.copy(card);
@@ -698,7 +785,7 @@ GroupDavSynchronizer.prototype = {
         this.pendingOperations = 0;
         // 		dump("pendingOperations: " + this.pendingOperations + "\n");
         //  		dump("status: " + status + "\n");
-        //  		dump("response: " + response + "\n");
+        //  		dump("jsonResponse: " + jsonResponse + "\n");
 
         if (status > 199 && status < 400 && jsonResponse) {
             let responses = jsonResponse["multistatus"][0]["response"];
@@ -751,6 +838,7 @@ GroupDavSynchronizer.prototype = {
             }
         }
         else {
+            setTimeout("throw new Error('Address book synchronzation could not contact server.')",0); 
             this.abort();
         }
     },
@@ -1391,10 +1479,16 @@ new:
 };
 
 function SynchronizeGroupdavAddressbook(uri, callback, callbackData) {
-    // 	dump("sync uri: " + uri + "\n");
+    // dump("sync uri: " + uri + "\n");
     let synchronizer = new GroupDavSynchronizer(uri);
-    // 	dump("callback:" + callback + "\n");
+    // dump("callback:" + callback + "\n");
+    // dump("callbackData:" + callbackData + "\n");
     synchronizer.callback = callback;
     synchronizer.callbackData = callbackData;
     synchronizer.start();
+}
+
+function SynchronizeGroupdavAddressbookAbort(uri) {
+    let synchronizer = new GroupDavSynchronizer(uri);
+    synchronizer.abortOngoingSync();
 }

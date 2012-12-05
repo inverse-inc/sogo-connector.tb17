@@ -576,10 +576,16 @@ GroupDavSynchronizer.prototype = {
                                       'Categories'         ,
                                       'NickName'           ,
                                       'WorkAddress'        ,
-                                      'HomeZipCode'
+                                      'HomeZipCode',
+                                      'WebPage1',
+                                      'WorkPhone',
+                                      '_AimScreenName',
+                                      'PagerNumber',
+                                      'SecondEmail',
+                                      'HomePhone'
                                       ];
                     if (deleteableProp.indexOf(propName) == -1) {
-                        //dump("  Property "+propNameNew+" is not deletable. Ignore.\n");
+                        dump("  Property "+propName+" is not deletable. Ignore.\n");
                     }
                     else
                     {
@@ -594,7 +600,7 @@ GroupDavSynchronizer.prototype = {
                             if(propName == propNameNew)
                             {
                               propertyStillAvailable = true;
-                              //dump("  Property "+propNameNew+" still available in new, received card.\n");
+                              dump("  Property "+propName+" still available in new, received card.\n");
                               break;
                             }
                         }

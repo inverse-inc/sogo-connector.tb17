@@ -44,7 +44,9 @@ function escapedForCard(theString) {
     theString = theString.replace(/\\/g, "\\\\");
     theString = theString.replace(/,/g, "\\,");
     theString = theString.replace(/;/g, "\\;");
-    theString = theString.replace(/:/g, "\\:");
+    // according to http://tools.ietf.org/html/rfc2426#page-37
+    // colons need not to be escaped.
+    // --> removed: theString = theString.replace(/:/g, "\\:");
     theString = theString.replace(/\r\n/g, "\\n");
     theString = theString.replace(/\n/g, "\\n");
 

@@ -480,13 +480,14 @@ sogoWebDAV.prototype = {
         }
         catch(e) {
             dump("sogoWebDAV: trapped exception: " + e + "\n");
+            setTimeout("throw new Error('sogoWebDAV could not download calendar. Try disabling proxy server.')",0); 
             status = 499;
         }
         try {
             let headers = {};
             let response = null;
             if (status == 499) {
-                dump("xmlRequest: received status 499 for url: " + this.url + "; method: " + method + "\n");
+                dump("xmlRequest: received status 499 for url: " + this.url + "\n");
             }
             else {
                 let visitor = {};

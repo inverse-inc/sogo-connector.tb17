@@ -27,6 +27,10 @@
 <!ENTITY GroupDavSync.accesskey                  		"S">
 <!ENTITY GroupDavSync.tooltip                      	"Synchronizovat kontakty se serverem">
 
+<!ENTITY GroupDavSyncAbort.label                      		"Abort Synchronization">
+<!ENTITY GroupDavSyncAbort.accesskey                  		"A">
+<!ENTITY GroupDavSyncAbort.tooltip                      	"Abort ongoing Synchronization (try if nothing happens)"> 
+
 <!ENTITY GroupDavConf.label                      		"Konfigurovat">
 <!ENTITY GroupDavConf.accesskey                  		"K">
 

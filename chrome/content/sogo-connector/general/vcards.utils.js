@@ -404,10 +404,10 @@ let _insertCardMethods = {
     },
     bday: function(props, parameters, values) {
         if (values[0].length > 0) {
-            let subValues = values[0].split("-");
-            props.extend({ "BirthYear": subValues[0],
-                           "BirthMonth": subValues[1],
-                           "BirthDay": subValues[2] });
+            let value = values[0].replace(/-/g, "", "g");
+            props.extend({ "BirthYear": value.substr(0, 4),
+                           "BirthMonth": value.substr(4, 2),
+                           "BirthDay": value.substr(6, 2) });
         }
     },
     "x-aim": function(props, parameters, values) {

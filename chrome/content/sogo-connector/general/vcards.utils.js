@@ -918,7 +918,7 @@ function photoContent(uri) {
         fileStream.close();
     }
     else {
-        dump("vcards.utils.js: file named '" + photoName + "' cannot be read\n");
+        dump("vcards.utils.js: '" + uri + "' cannot be read\n");
     }
 
     return content;

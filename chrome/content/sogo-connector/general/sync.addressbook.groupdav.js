@@ -287,8 +287,7 @@ GroupDavSynchronizer.prototype = {
 
         for (let key in this.serverDownloads) {
             let itemDict = this.serverDownloads[key];
-            if (itemDict.type == "text/x-vcard"
-                || itemDict.type == "text/vcard") {
+            if (this.isSupportedVCardType(itemDict.type)) {
                 hasDownloads = true;
                 let fileUrl = this.gURL + key;
                 let data = {query: "vcard-download", data: key};
@@ -312,7 +311,7 @@ GroupDavSynchronizer.prototype = {
 
         for (let key in this.serverDownloads) {
             let itemDict = this.serverDownloads[key];
-            if (itemDict.type == "text/x-vlist") {
+            if (this.isSupportedVCardListType(itemDict.type)) {
                 //         dump(key + " is a list to download\n");
                 hasDownloads = true;
                 let fileUrl = this.gURL + key;
@@ -867,8 +866,40 @@ GroupDavSynchronizer.prototype = {
             request.propfind(["DAV: getcontenttype", "DAV: getetag"]);
         }
     },
+    isSupportedVCardType: function(itemType) {
+        //check if contenttype starts with supported types.
+        //this allow extra variables, e.g. in:
+        //  content-type: text/x-vcard; charset=utf-8
+        if (itemType.indexOf("text/x-vcard") == 0 
+              || itemType.indexOf("text/vcard") == 0 ) {
+          return true;
+        }
+        else
+          return false;
+    },
+    isSupportedVCardListType: function(listType) {
+        //check if contenttype starts with supported types.
+        //this allow extra variables, e.g. in:
+        //  content-type: text/x-vlist; charset=utf-8
+        if (listType.indexOf("text/x-vlist") == 0) {
+          return true;
+        }
+        else
+          return false;
+    },
+    isSupportedContentType: function(contType) {
+        //check if contenttype starts with supported types.
+        //this allow extra variables, e.g. in:
+        //  content-type: text/x-vcard; charset=utf-8
+        if (this.isSupportedVCardType(contType)
+              || this.isSupportedVCardListType(contType) ) {
+          return true;
+        }
+        else
+          return false;
+    },
     onServerHashQueryComplete: function(status, jsonResponse) {
-        //     dump("onServerHashQueryComplete\n");
+             dump("onServerHashQueryComplete\n");
         this.pendingOperations = 0;
 
         let reportedKeys = {};
@@ -892,9 +923,7 @@ GroupDavSynchronizer.prototype = {
 
 			        let contType = prop["getcontenttype"][0];
 
-                                if (contType == "text/x-vcard"
-                                    || contType == "text/vcard"
-                                    || contType == "text/x-vlist") {
+                                if (this.isSupportedContentType(contType)) {
                                     let version = prop["getetag"][0];
                                     let keyArray = href.split("/");
                                     let key = keyArray[keyArray.length - 1];
@@ -923,7 +952,7 @@ GroupDavSynchronizer.prototype = {
                                     }
                                 }
                                 else {
-                                    dump("unknown content-type: " + contType + "(ignored)\n");
+                                    dump("unknown content-type: " + contType + "  (ignored)\n");
                                 }
                             }
                         }
@@ -954,7 +983,7 @@ GroupDavSynchronizer.prototype = {
     },
 
     onServerSyncQueryComplete: function(status, jsonResponse) {
-        //     dump("onServerSyncQueryComplete\n");
+             dump("onServerSyncQueryComplete\n");
         this.pendingOperations = 0;
 
 /*
@@ -1021,9 +1050,7 @@ new:
                 function handleAddOrModify(key, itemStatus, propstat) {
                     let prop = propstat["prop"][0];
                     let contType = prop["getcontenttype"][0];
-                    if (contType == "text/x-vcard"
-                        || contType == "text/vcard"
-                        || contType == "text/x-vlist") {
+                    if (this.isSupportedContentType(contType)) {
                         reportedKeys[key] = true;
                         let version = prop["getetag"][0];
                         let itemDict = { etag: version, type: contType };
@@ -1086,7 +1113,7 @@ new:
                         }
                     }
                     else
-                        dump("unknown content-type: " + contType + "(ignored)\n");
+                        dump("unknown content-type: " + contType + "  (ignored)\n");
                 }
 
                 let completeSync = (this.webdavSyncToken.length == 0);

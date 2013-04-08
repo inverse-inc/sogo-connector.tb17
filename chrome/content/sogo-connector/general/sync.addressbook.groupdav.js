@@ -523,18 +523,18 @@ GroupDavSynchronizer.prototype = {
             }
             let photoURL = oldCard.getProperty("PhotoURI", "");
             if (photoURL != "") {
-                /* warning: this might not work on windows, due to the accessing of files via uris */
                 if (urlIsInSOGoImageCache(photoURL)) {
-                    //for Windows: photoURL == file://absolute/path/to/some.jpg
-                    let parts = photoURL.split("/");
-                    let lastPart = parts[parts.length-1];
-                    if (lastPart != "") {
-                        //on Windows, this is a absolute path. We only need the filename.
-                        parts = lastPart.split("\\");
-                        if(parts.length > 1)
-                            lastPart = parts[parts.length-1];
-                        deletePhotoFile(lastPart, true);
+                    //for Windows: photoURL == file://C:\Some\path\to\file
+                    var appInfo = Components.classes["@mozilla.org/xre/app-info;1"].getService(Components.interfaces.nsIXULRuntime);
+                    let parts;
+                    if (appInfo.OS == "WINNT"){
+                        parts = photoURL.split("\\");
+                    } else {
+                        parts = photoURL.split("/");
                     }
+                    let lastPart = parts[parts.length-1];
+                    if (lastPart != "") 
+                        deletePhotoFile(lastPart, true);
                 }
                 oldCard.deleteProperty("PhotoURI");
             }

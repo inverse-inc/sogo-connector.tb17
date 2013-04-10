@@ -7,7 +7,7 @@ else
 VERSION = $(shell grep em:version install.rdf | sed -e 's@\(em:version=\|\"\|\ \)@@g')
 endif
 
-XPI_ARCHIVE = $(PACKAGE)-$(VERSION)-$(GIT_REV).xpi
+XPI_ARCHIVE = downloads/$(PACKAGE)-$(VERSION)-$(GIT_REV).xpi
 
 SHELL = /bin/bash
 ZIP = /usr/bin/zip

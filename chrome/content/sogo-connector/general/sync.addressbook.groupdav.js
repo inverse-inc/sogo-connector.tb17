@@ -1050,7 +1050,7 @@ new:
                 function handleAddOrModify(key, itemStatus, propstat) {
                     let prop = propstat["prop"][0];
                     let contType = prop["getcontenttype"][0];
-                    if (this.isSupportedContentType(contType)) {
+                    if (this_.isSupportedContentType(contType)) {
                         reportedKeys[key] = true;
                         let version = prop["getetag"][0];
                         let itemDict = { etag: version, type: contType };

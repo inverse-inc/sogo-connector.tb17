@@ -553,9 +553,17 @@ sogoWebDAV.prototype = {
             this._sendHTTPRequest(operation);
         }
         else if (operation == "PUT" || operation == "POST") {
-            this._sendHTTPRequest(operation,
-                                  parameters.data,
-                                  { "content-type": parameters.contentType });
+	    if(parameters.contentType.indexOf("text/vcard") == 0) {
+                this._sendHTTPRequest(operation,
+                                      parameters.data,
+                                      { "content-type": parameters.contentType,
+				        "If-None-Match": "*" });
+	    }
+	    else {
+	        this._sendHTTPRequest(operation,
+                                      parameters.data,
+                                      { "content-type": parameters.contentType });
+	    }
         }
         else if (operation == "PROPFIND") {
             let headers = { "depth": (parameters.deep

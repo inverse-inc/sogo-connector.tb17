@@ -16,6 +16,7 @@ locale sogo-connector en-US chrome/locale/en-US/sogo-connector/
 locale sogo-connector fr-FR chrome/locale/fr-FR/sogo-connector/
 locale sogo-connector de-DE chrome/locale/de-DE/sogo-connector/
 locale sogo-connector nl-NL chrome/locale/nl-NL/sogo-connector/
+locale sogo-connector hu-HU chrome/locale/hu-HU/sogo-connector/
 locale sogo-connector it-IT chrome/locale/it-IT/sogo-connector/
 
 content inverse-library chrome/content/inverse-library/

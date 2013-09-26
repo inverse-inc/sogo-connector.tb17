@@ -525,7 +525,9 @@ CalDAVACLManager.prototype = {
     pendingItemOperations: null,
 
     get isOffline() {
-        return cal.getIOService().offline;
+	var iOService = Components.classes["@mozilla.org/network/io-service;1"]
+            .getService(Components.interfaces.nsIIOService);
+	return iOService.offline;
     },
 
     getCalendarEntry: function cDACLM_getCalendarEntry(calendar, listener) {
@@ -1018,7 +1020,7 @@ CalDAVACLManager.prototype = {
                                     .getService(Components.interfaces.nsIMsgAccountManager);
         let defaultAccount = this.accountMgr.defaultAccount;
 
-        let identities = this.accountMgr.allIdentities.QueryInterface(Components.interfaces.nsICollection);
+        let identities = this.accountMgr.allIdentities.enumerate().QueryInterface(Components.interfaces.nsISimpleEnumerator);
         let values = [];
         let current = 0;
         let max = 0;
@@ -1026,8 +1028,8 @@ CalDAVACLManager.prototype = {
         // We get the identities we use for mail accounts. We also
         // get the highest key which will be used as the basis when
         // adding new identities (so we don't overwrite keys...)
-        for (let i = identities.Count()-1; i >= 0; i--) {
-            let identity = identities.GetElementAt(i).QueryInterface(Components.interfaces.nsIMsgIdentity);
+	while (identities.hasMoreElements()) {
+	    let identity = identities.getNext().QueryInterface(Components.interfaces.nsIMsgIdentity);
             if (identity.key.indexOf("caldav_") == 0) {
                 if (identity.email) {
                     values.push(identity.key);
@@ -1065,16 +1067,14 @@ CalDAVACLManager.prototype = {
         let lowEmail = email.toLowerCase();
         let lowDisplayName = displayName.toLowerCase();
 
-        let identities = this.accountMgr.allIdentities.QueryInterface(Components.interfaces.nsICollection);
-        let i = 0;
-        while (!identity && i < identities.Count()) {
-            let currentIdentity = identities.GetElementAt(i)
+        let identities = this.accountMgr.allIdentities.enumerate().QueryInterface(Components.interfaces.nsISimpleEnumerator);
+
+        while (!identity && identities.hasMoreElements()) {
+            let currentIdentity = identities.getNext()
                                             .QueryInterface(Components.interfaces.nsIMsgIdentity);
             if (currentIdentity.email.toLowerCase() == lowEmail
                 && currentIdentity.fullName.toLowerCase() == lowDisplayName)
                 identity = currentIdentity;
-            else
-                i++;
         }
 
         // dump("identity for " + email + ": " + identity + "\n");
@@ -1186,7 +1186,10 @@ CalDAVACLManager.prototype = {
     },
 
     xmlRequest: function cDACLM_xmlRequest(url, method, body, headers, data, synchronous) {
-        let channel = cal.getIOService().newChannelFromURI(cal.makeURL(url));
+	var iOService = Components.classes["@mozilla.org/network/io-service;1"]
+            .getService(Components.interfaces.nsIIOService);
+	
+	let channel = iOService.newChannelFromURI(cal.makeURL(url));
         let httpChannel = channel.QueryInterface(Components.interfaces.nsIHttpChannel);
         httpChannel.loadFlags |= Components.interfaces.nsIRequest.LOAD_BYPASS_CACHE;
 

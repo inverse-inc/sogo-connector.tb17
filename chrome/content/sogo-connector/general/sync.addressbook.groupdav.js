@@ -354,10 +354,10 @@ GroupDavSynchronizer.prototype = {
         dump("Unacceptable status code: " + this.callbackCode + ". We abort.\n");
         if(this.callbackCode == "404" || this.callbackCode == "405")
         {
-          dump("!$/($/*********************************************");
-          dump("Address " + this.gURL + " not reachable. Typo?");
-          Components.utils.reportError("Address " + this.gURL + " not reachable. Typo?");
-          toJavaScriptConsole();
+          var errmsg = "Address " + this.gURL + " not reachable. Typo?"
+          dump(errmsg);
+          reportError(errmsg);
+          openErrorConsole();
         }
         this.pendingOperations = 0;
         this.checkCallback();
@@ -1262,7 +1262,7 @@ new:
             if (vcard) {
                 let cardURL = this.gURL + key;
                 let data = {query: "card-upload", data: card, key: key};
-                //         dump("upload new/updated card: " + cardURL + "\n");
+                dump("upload new/updated card ("+card.displayName+"): " + cardURL + "\n");
                 this.remainingUploads++;
                 let request = new sogoWebDAV(cardURL, this, data);
                 request.put(vcard, "text/vcard; charset=utf-8");

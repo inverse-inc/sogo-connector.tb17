@@ -110,3 +110,16 @@ function dumpObject(object) {
     let dumper = new objectDumper();
     return dumper.dump(object);
 }
+
+function reportError(errmsg) {
+    //TODO: check if javascript.options.showInConsole==true then:
+    //Components.utils.reportError(errmsg);
+    //else
+    var Application = Components.classes["@mozilla.org/steel/application;1"].getService(Components.interfaces.steelIApplication);
+    Application.console.log(errmsg);
+}
+
+function openErrorConsole(errmsg) {
+    var Application = Components.classes["@mozilla.org/steel/application;1"].getService(Components.interfaces.steelIApplication);
+    //Application.console.open();
+}

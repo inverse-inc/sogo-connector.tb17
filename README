@@ -1,3 +1,9 @@
+SOGo-Connector for Thunderbird 17+
+==================================
+
+Plugin that allows to add CardDav (WebDav) address books to Thunderbird.
+To add a remote address book to Thunderbird, open address book, click File -> New -> "Remote Address Book".
+
 =====================================================	
 	To package the extension 
 =====================================================

@@ -352,6 +352,13 @@ GroupDavSynchronizer.prototype = {
     },
     abort: function() {
         dump("Unacceptable status code: " + this.callbackCode + ". We abort.\n");
+        if(this.callbackCode == "404" || this.callbackCode == "405")
+        {
+          dump("!$/($/*********************************************");
+          dump("Address " + this.gURL + " not reachable. Typo?");
+          Components.utils.reportError("Address " + this.gURL + " not reachable. Typo?");
+          toJavaScriptConsole();
+        }
         this.pendingOperations = 0;
         this.checkCallback();
     },
@@ -837,7 +844,7 @@ GroupDavSynchronizer.prototype = {
             }
         }
         else {
-            setTimeout("throw new Error('Address book synchronzation could not contact server.')",0); 
+            setTimeout("throw new Error('Address book synchronzation could not contact server at "+this.gURL+". HTTP response: "+status+"')",0); 
             this.abort();
         }
     },

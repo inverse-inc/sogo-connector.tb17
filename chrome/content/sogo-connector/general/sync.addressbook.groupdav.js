@@ -478,6 +478,7 @@ GroupDavSynchronizer.prototype = {
             this.appendFailure(status, card);
             dump("Upload failure uploading card: " + cardURL
                  + ".\nHTTP Status Code:" + status + "\n");
+            dump("Received error data: " + data + "\n");
         }
 
         this.progressMgr.updateAddressBook(this.gURL);

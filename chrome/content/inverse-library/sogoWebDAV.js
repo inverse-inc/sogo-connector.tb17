@@ -549,21 +549,34 @@ sogoWebDAV.prototype = {
     },
 
     load: function(operation, parameters) {
+        //if(parameters != null)
+        //  dump("****** LOAD: " + operation + " DATA: " + parameters.data +" VERSION: "+this.cbData.version+"\n");
+        //else
+        //  dump("****** LOAD: " + operation + " NO PARAMETERS. VERSION: "+this.cbData.version+"\n");
         if (operation == "GET") {
             this._sendHTTPRequest(operation);
         }
-        else if (operation == "PUT" || operation == "POST") {
-	    if(parameters.contentType.indexOf("text/vcard") == 0) {
-                this._sendHTTPRequest(operation,
-                                      parameters.data,
-                                      { "content-type": parameters.contentType,
-				        "If-None-Match": "*" });
-	    }
-	    else {
-	        this._sendHTTPRequest(operation,
-                                      parameters.data,
-                                      { "content-type": parameters.contentType });
-	    }
+        else if (operation == "POST") {
+          if(parameters.contentType.indexOf("text/vcard") == 0) {
+                    this._sendHTTPRequest(operation,
+                                          parameters.data,
+                                          { "content-type": parameters.contentType,
+                    "If-None-Match": "*" });
+          }
+          else {
+              this._sendHTTPRequest(operation,
+                                          parameters.data,
+                                          { "content-type": parameters.contentType });
+          }
+        }
+        else if (operation == "PUT") {
+            //According to rfc2616 (-> http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.26)
+            //as interpreted by http://stackoverflow.com/questions/2111854/what-does-the-http-header-if-none-match-mean#2111901:
+            //If set "If-None-Match: *" means "Don't PUT this file if there's any version of this file already there."
+            //Since this PUT should also update existing entries, do not set "If-None-Match: *" for PUT.
+            this._sendHTTPRequest(operation,
+                                        parameters.data,
+                                        { "content-type": parameters.contentType });
         }
         else if (operation == "PROPFIND") {
             let headers = { "depth": (parameters.deep

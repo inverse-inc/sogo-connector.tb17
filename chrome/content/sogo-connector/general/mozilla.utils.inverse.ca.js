@@ -121,5 +121,5 @@ function reportError(errmsg) {
 
 function openErrorConsole(errmsg) {
     var Application = Components.classes["@mozilla.org/steel/application;1"].getService(Components.interfaces.steelIApplication);
-    //Application.console.open();
+    Application.console.open();
 }

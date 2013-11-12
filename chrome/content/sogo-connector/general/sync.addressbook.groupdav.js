@@ -414,6 +414,9 @@ GroupDavSynchronizer.prototype = {
         }
         dump("  uploaded card has etag: " + etag + "\n");
         card.setProperty(kETagKey, "" + String(etag));
+        // store etag in second property because kETagKey will be 
+        // set to -1 after contact got updated by user
+        card.setProperty('etag', "" + String(etag));
         this.gAddressBook.modifyCard(card);
     },
 
@@ -503,6 +506,9 @@ GroupDavSynchronizer.prototype = {
         card.setProperty(kNameKey, String(key));
         card.setProperty(kETagKey,
                          String(this.serverDownloads[key].etag));
+        // store etag in second property because kETagKey will be 
+        // set to -1 after contact got updated by user
+        card.setProperty('etag', String(this.serverDownloads[key].etag));
         // card.setProperty("groupDavVcardCompatibility",
         //                  vcardFieldsArray["groupDavVcardCompatibility"]);
         dump("  received card key: " + key + "\n");

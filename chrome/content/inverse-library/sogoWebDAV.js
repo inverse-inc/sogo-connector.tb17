@@ -553,17 +553,20 @@ sogoWebDAV.prototype = {
             this._sendHTTPRequest(operation);
         }
         else if (operation == "PUT" || operation == "POST") {
-	    if(parameters.contentType.indexOf("text/vcard") == 0) {
-                this._sendHTTPRequest(operation,
-                                      parameters.data,
-                                      { "content-type": parameters.contentType,
-				        "If-None-Match": "*" });
-	    }
-	    else {
-	        this._sendHTTPRequest(operation,
-                                      parameters.data,
-                                      { "content-type": parameters.contentType });
-	    }
+            let headers = { "content-type": parameters.contentType };
+            
+            let etag    = this.cbData.data.getProperty("etag", "");
+            if (!etag.length) {
+                headers["If-None-Match"] = '*';
+            } else {
+                headers["If-Match"] = etag;
+            }
+
+            this._sendHTTPRequest(operation, parameters.data, headers);
+            
+            //if(errorCode === 412){ //If-Match failed
+                //do the same as Thunderbird does => Display a message and ask the user what to do
+            //}
         }
         else if (operation == "PROPFIND") {
             let headers = { "depth": (parameters.deep
